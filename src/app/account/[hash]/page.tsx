@@ -43,25 +43,28 @@ const AccountPage = () => {
 
     // Fetch wallet holdings
     const fetchWalletHoldings = async () => {
-      try {
-        const tokenBalances = await alchemy.core.getTokenBalances(accountAddress);
-        const holdings = await Promise.all(
-          tokenBalances.tokenBalances.map(async ({ contractAddress, tokenBalance }) => {
-            const metadata = await alchemy.core.getTokenMetadata(contractAddress);
-            return {
-              tokenAddress: contractAddress,
-              name: metadata.name,
-              ticker: metadata.symbol,
-              balance: ethers.formatUnits(tokenBalance!.toString(), metadata.decimals)
-            };
-          })
-        );
-        setWalletHoldings(holdings);
-      } catch (error) {
-        console.error('Error fetching wallet holdings:', error);
-        setError(error as Error);
-      }
-    };
+        try {
+          const tokenBalances = await alchemy.core.getTokenBalances(accountAddress);
+          const holdings = await Promise.all(
+            tokenBalances.tokenBalances.map(async ({ contractAddress, tokenBalance }) => {
+              const metadata = await alchemy.core.getTokenMetadata(contractAddress);
+              if (tokenBalance !== null) { // Null check
+                return {
+                  tokenAddress: contractAddress,
+                  name: metadata.name,
+                  ticker: metadata.symbol,
+                  balance: ethers.formatUnits(tokenBalance.toString(), metadata.decimals!) // Perform null check before toString()
+                };
+              }
+              return null;
+            })
+          );
+          setWalletHoldings(holdings.filter((holding): holding is Holding => holding !== null)); // Filter out null values
+        } catch (error) {
+          console.error('Error fetching wallet holdings:', error);
+          setError(error as Error);
+        }
+      };
 
     fetchWalletBalance();
     fetchWalletHoldings();
