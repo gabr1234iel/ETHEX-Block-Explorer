@@ -37,7 +37,7 @@ const AccountPage = () => {
         setWalletBalance(ethers.formatEther(balance.toString())); // Convert to Ether
       } catch (error) {
         console.error('Error fetching wallet balance:', error);
-        setError(error);
+        setError(error as Error);
       }
     };
 
@@ -59,7 +59,7 @@ const AccountPage = () => {
         setWalletHoldings(holdings);
       } catch (error) {
         console.error('Error fetching wallet holdings:', error);
-        setError(error);
+        setError(error as Error);
       }
     };
 
