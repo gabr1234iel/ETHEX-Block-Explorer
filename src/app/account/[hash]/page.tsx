@@ -6,16 +6,25 @@ import { useParams } from 'next/navigation';
 import { Alchemy, Network } from 'alchemy-sdk';
 import { ethers } from 'ethers';
 
+interface Holding {
+    tokenAddress: string;
+    name: string;
+    ticker: string;
+    balance: string;
+  }
+  
+
+
 const alchemy = new Alchemy({
   apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
   network: Network.ETH_MAINNET,
 });
 
 const AccountPage = () => {
-  const { hash: accountAddress } = useParams();
-  const [walletBalance, setWalletBalance] = useState('0');
-  const [walletHoldings, setWalletHoldings] = useState([]);
-  const [error, setError] = useState(null);
+    const { hash: accountAddress } = useParams<{ hash: string }>();
+    const [walletBalance, setWalletBalance] = useState<string>('0');
+    const [walletHoldings, setWalletHoldings] = useState<Holding[]>([]);
+    const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (!accountAddress) return;
